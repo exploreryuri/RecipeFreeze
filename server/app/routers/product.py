@@ -1,13 +1,11 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship
-from app.database import Base
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from database import async_session
+from product import Product
 
-class Product(Base):
-    __tablename__ = "products"
+router = APIRouter()
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    quantity = Column(Integer)
-    owner_id = Column(Integer, ForeignKey("users.id"))
-
-    owner = relationship("User", back_populates="products")
+@router.get("/products")
+async def get_products(db: AsyncSession = Depends(async_session)):
+    result = await db.execute(select(Product))
+    return result.scalars().all()
