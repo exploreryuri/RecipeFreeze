@@ -1,5 +1,6 @@
 from pydantic import BaseModel, validator
 from typing import Optional, Literal
+from datetime import date
 
 allowed_unit = ['г', 'кг', 'мл', 'л', 'шт', 'ст.л', 'ч.л']
 
