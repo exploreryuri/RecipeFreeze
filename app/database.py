@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 
-DATABASE_URL = "postgresql+asyncpg://postgres:2202@localhost:5432/fridge_db"
+DATABASE_URL = "postgresql+psycopg2://postgres:2202@localhost:5432/fridge_db"
 
 Base = declarative_base()
 engine = create_engine(

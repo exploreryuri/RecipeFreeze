@@ -6,10 +6,10 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'app')))
 
-from app.database import Base
-from app.models.user import User
-from app.models.product import Product
-from app.models.recipe import Recipe
+from database import Base
+from models.user import User
+from models.product import Product
+from models.recipe import Recipe
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

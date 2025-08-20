@@ -2,9 +2,9 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from app.database import async_session
-from app.models.product import Product
-from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
+from database import async_session
+from models.product import Product
+from schemas.product import ProductCreate, ProductResponse, ProductUpdate
 from sqlalchemy import update, delete
 
 async def get_product_by_id(db: AsyncSession, product_id: int) -> Product:
@@ -18,11 +18,6 @@ router = APIRouter(
     prefix="/product",
     tags=["product"]
 )
-
-@router.get("/products")
-async def get_products(db: AsyncSession = Depends(async_session)):
-    result = await db.execute(select(Product))
-    return result.scalars().all()
 
 # CREATE
 @router.post("/", response_model=ProductResponse)
@@ -53,8 +48,8 @@ async def read_product(
 # UPDATE
 @router.put("/{product_id}", response_model=ProductResponse)
 async def update_product(
-    product_id: int, 
-    product_data: ProductUpdate, 
+    product_id: int,
+    product_data: ProductUpdate,
     db: AsyncSession = Depends(async_session)
 ):
     product = await get_product_by_id(db, product_id)
