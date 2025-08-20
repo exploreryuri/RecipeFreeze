@@ -1,14 +1,14 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 from sqlalchemy.future import select
-from app.database import async_session
+from app.database import get_db
 from app.models.product import Product
 from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
 from sqlalchemy import update, delete
 
-async def get_product_by_id(db: AsyncSession, product_id: int) -> Product:
-    result = await db.execute(select(Product).where(Product.id == product_id))
+def get_product_by_id(product_id: int, db: Session = Depends(get_db)) -> Product:
+    result = db.execute(select(Product).where(Product.id == product_id))
     product = result.scalar_one_or_none()
     if product is None:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -21,54 +21,54 @@ router = APIRouter(
 
 # CREATE
 @router.post("/", response_model=ProductResponse)
-async def create_product(
+def create_product(
     product_data: ProductCreate, 
-    db: AsyncSession = Depends(async_session)
+    db: Session = Depends(get_db)
 ):
     new_product = Product(**product_data.dict())
     db.add(new_product)
-    await db.commit()
-    await db.refresh(new_product)
+    db.commit()
+    db.refresh(new_product)
     return new_product
 
 # READ (all)
 @router.get("/", response_model=List[ProductResponse])
-async def read_products(db: AsyncSession = Depends(async_session)):
-    result = await db.execute(select(Product))
+def read_products(db: Session = Depends(get_db)):
+    result = db.execute(select(Product))
     return result.scalars().all()
 
 # READ (one)
 @router.get("/{product_id}", response_model=ProductResponse)
-async def read_product(
+def read_product(
     product_id: int, 
-    db: AsyncSession = Depends(async_session)
+    db: Session = Depends(get_db)
 ):
-    return await get_product_by_id(db, product_id)
+    return get_product_by_id(db, product_id)
 
 # UPDATE
 @router.put("/{product_id}", response_model=ProductResponse)
-async def update_product(
+def update_product(
     product_id: int,
     product_data: ProductUpdate,
-    db: AsyncSession = Depends(async_session)
+    db: Session = Depends(get_db)
 ):
-    product = await get_product_by_id(db, product_id)
+    product = get_product_by_id(db, product_id)
     
     update_data = product_data.dict(exclude_unset=True)
     for field, value in update_data.items():
         setattr(product, field, value)
     
-    await db.commit()
-    await db.refresh(product)
+    db.commit()
+    db.refresh(product)
     return product
 
 # DELETE
 @router.delete("/{product_id}")
 async def delete_product(
     product_id: int, 
-    db: AsyncSession = Depends(async_session)
+    db: Session = Depends(get_db)
 ):
-    product = await get_product_by_id(db, product_id)
-    await db.execute(delete(Product).where(Product.id == product_id))
-    await db.commit()
+    product = get_product_by_id(db, product_id)
+    db.execute(delete(Product).where(Product.id == product_id))
+    db.commit()
     return {"message": "Product deleted successfully"}
