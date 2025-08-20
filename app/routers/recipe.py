@@ -3,9 +3,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
 from typing import List
 
-from schemas.recipe import RecipeCreate, RecipeUpdate, RecipeResponse
-from models.recipe import Recipe
-from database import async_session
+from app.schemas.recipe import RecipeCreate, RecipeUpdate, RecipeResponse
+from app.models.recipe import Recipe
+from app.database import async_session
 
 router = APIRouter(
     prefix="/recipe",

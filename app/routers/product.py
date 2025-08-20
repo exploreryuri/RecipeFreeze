@@ -2,9 +2,9 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from database import async_session
-from models.product import Product
-from schemas.product import ProductCreate, ProductResponse, ProductUpdate
+from app.database import async_session
+from app.models.product import Product
+from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
 from sqlalchemy import update, delete
 
 async def get_product_by_id(db: AsyncSession, product_id: int) -> Product:
