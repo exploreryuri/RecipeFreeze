@@ -7,7 +7,10 @@ from app.schemas.recipe import RecipeCreate, RecipeUpdate, RecipeResponse
 from app.models.recipe import Recipe
 from app.database import async_session
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/recipe",
+    tags=["recipe"]
+)
 
 @router.get("/recipes")
 async def get_products(db: AsyncSession = Depends(async_session)):
